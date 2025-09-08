@@ -19,8 +19,26 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
-ADMIN_IDS = [int(x) for x in os.getenv("ADMIN_IDS", "").split(",") if x.strip()]
+
+# Parse admin IDs safely
+ADMIN_IDS = []
+for x in os.getenv("ADMIN_IDS", "").split(","):
+    x = x.strip()
+    if x:
+        try:
+            ADMIN_IDS.append(int(x))
+        except ValueError:
+            print(f"[WARN] Ignoring invalid ADMIN_ID value: {x}")
+
+# Parse SPECTATOR_GROUP_ID safely
 SPECTATOR_GROUP_ID = os.getenv("SPECTATOR_GROUP_ID")
+if SPECTATOR_GROUP_ID:
+    try:
+        SPECTATOR_GROUP_ID = int(SPECTATOR_GROUP_ID)
+    except ValueError:
+        print(f"[WARN] Invalid SPECTATOR_GROUP_ID: {SPECTATOR_GROUP_ID}")
+        SPECTATOR_GROUP_ID = None
+
 
 # matchmaking state
 waiting_users = asyncio.Queue()
