@@ -281,10 +281,18 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
         # If it's text
         if update.message.text:
-            await context.bot.send_message(partner_id, update.message.text)
-        else:
-            # for other content, forward the whole message
-            await update.message.forward(chat_id=partner_id)
+    await context.bot.send_message(partner_id, update.message.text)
+else:
+    # Use copy_message to preserve anonymity
+    try:
+        await context.bot.copy_message(
+            chat_id=partner_id,
+            from_chat_id=update.message.chat.id,
+            message_id=update.message.message_id
+        )
+    except Exception as e:
+        logger.warning(f"Failed to copy message anonymously: {e}")
+
 
         # Notify surveillance about message (non-invasive wrapper)
         try:
